@@ -4,11 +4,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 
 public class Parallel {
-    private static class maxStringThread extends Thread {
+    private static class MaxStringThread extends Thread {
         private List<String> list;
         private String maxStr;
 
-        maxStringThread(List<String> list) {
+        MaxStringThread(List<String> list) {
             this.list = list;
             maxStr = "";
         }
@@ -28,7 +28,7 @@ public class Parallel {
 
     static String maxParallel(int count, List<String> list) throws InterruptedException {
         int startPoint = 0;
-        maxStringThread[] threads = new maxStringThread[count];
+        MaxStringThread[] threads = new MaxStringThread[count];
 
         int step = list.size() / count;
         int rem = list.size() % count;
@@ -39,20 +39,20 @@ public class Parallel {
                 add = 1;
                 rem--;
             }
-            threads[i] = new maxStringThread(list.subList(startPoint, startPoint + step + add));
+            threads[i] = new MaxStringThread(list.subList(startPoint, startPoint + step + add));
             startPoint += step + add;
         }
 
-        for(maxStringThread thread: threads) {
+        for(MaxStringThread thread: threads) {
             thread.start();
         }
 
-        for(maxStringThread thread: threads) {
+        for(MaxStringThread thread: threads) {
             thread.join();
         }
 
         String str = "";
-        for(maxStringThread thread: threads) {
+        for(MaxStringThread thread: threads) {
             if(str.length() < thread.getMaxStr().length())
                 str = thread.getMaxStr();
         }
