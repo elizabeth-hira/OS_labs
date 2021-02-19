@@ -4,11 +4,11 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ForkJoinPool;
 
 public class Parallel {
-    private static class MyThread extends Thread {
+    private static class CustomThread extends Thread {
         private List<String> list;
         private String maxStr;
 
-        MyThread(List<String> list) {
+        CustomThread(List<String> list) {
             this.list = list;
             maxStr = "";
         }
@@ -28,7 +28,7 @@ public class Parallel {
 
     static String maxParallel(int count, List<String> list) throws InterruptedException {
         int startPoint = 0;
-        MyThread[] threads = new MyThread[count];
+        CustomThread[] threads = new CustomThread[count];
 
         int step = list.size() / count;
         int rem = list.size() % count;
@@ -39,20 +39,20 @@ public class Parallel {
                 add = 1;
                 rem--;
             }
-            threads[i] = new MyThread(list.subList(startPoint, startPoint + step + add));
+            threads[i] = new CustomThread(list.subList(startPoint, startPoint + step + add));
             startPoint += step + add;
         }
 
-        for(MyThread thread: threads) {
+        for(CustomThread thread: threads) {
             thread.start();
         }
 
-        for(MyThread thread: threads) {
+        for(CustomThread thread: threads) {
             thread.join();
         }
 
         String str = "";
-        for(MyThread thread: threads) {
+        for(CustomThread thread: threads) {
             if(str.length() < thread.getMaxStr().length())
                 str = thread.getMaxStr();
         }
@@ -65,22 +65,5 @@ public class Parallel {
 
         return customThreadPool.submit(() -> list.parallelStream()
                 .max(Comparator.comparingInt(String::length))).get().get();
-    }
-
-    static void bigDataParallel(int count, List<String> list) throws InterruptedException, ExecutionException {
-        long start, res;
-        int i = count;
-
-        start = System.currentTimeMillis();
-        Parallel.maxParallel(i, list);
-        res = System.currentTimeMillis() - start;
-
-        System.out.printf("Threads count: %d\nmaxParallel function: %dms\n", i, res);
-
-        start = System.currentTimeMillis();
-        Parallel.maxParallelStream(i, list);
-        res = System.currentTimeMillis() - start;
-
-        System.out.printf("maxParallelStream function: %dms\n\n", res);
     }
 }

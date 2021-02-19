@@ -23,21 +23,21 @@ class ParallelTest {
     void bigDataParallel1Thread() throws ExecutionException, InterruptedException {
         List<String> list = getList(100000);
 
-        Parallel.bigDataParallel(1, list);
+        bigDataParallel(1, list);
     }
 
     @Test
     void bigDataParallel5Threads() throws ExecutionException, InterruptedException {
         List<String> list = getList(100000);
 
-        Parallel.bigDataParallel(5, list);
+        bigDataParallel(5, list);
     }
 
     @Test
     void bigDataParallel10Threads() throws ExecutionException, InterruptedException {
         List<String> list = getList(100000);
 
-        Parallel.bigDataParallel(10, list);
+        bigDataParallel(10, list);
     }
 
     public static List<String> getList(int size){
@@ -56,5 +56,22 @@ class ParallelTest {
         }
 
         return list;
+    }
+
+    static void bigDataParallel(int count, List<String> list) throws InterruptedException, ExecutionException {
+        long start, res;
+        int i = count;
+
+        start = System.currentTimeMillis();
+        Parallel.maxParallel(i, list);
+        res = System.currentTimeMillis() - start;
+
+        System.out.printf("Threads count: %d\nmaxParallel function: %dms\n", i, res);
+
+        start = System.currentTimeMillis();
+        Parallel.maxParallelStream(i, list);
+        res = System.currentTimeMillis() - start;
+
+        System.out.printf("maxParallelStream function: %dms\n\n", res);
     }
 }
